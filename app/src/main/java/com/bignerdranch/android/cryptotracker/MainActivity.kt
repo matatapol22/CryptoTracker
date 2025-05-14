@@ -1,6 +1,7 @@
 package com.bignerdranch.android.cryptotracker
 
 import android.os.Bundle
+import android.widget.SearchView
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -11,36 +12,41 @@ import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: CryptoViewModel
+    private lateinit var chart: LineChart
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val bitcoinPrice = findViewById<TextView>(R.id.bitcoinPrice)
-        val ethereumPrice = findViewById<TextView>(R.id.ethereumPrice)
-        val chart = findViewById<LineChart>(R.id.chart)
+        val searchView = findViewById<SearchView>(R.id.searchView)
+        val cryptoName = findViewById<TextView>(R.id.cryptoName)
+        val cryptoPrice = findViewById<TextView>(R.id.cryptoPrice)
+        chart = findViewById(R.id.lineChart)
 
-        viewModel = ViewModelProvider(this)[CryptoViewModel::class.java]
+        viewModel = ViewModelProvider(this).get(CryptoViewModel::class.java)
 
-        viewModel.prices.observe(this) { prices ->
-            prices["bitcoin"]?.get("usd")?.let {
-                bitcoinPrice.text = "Bitcoin: $${it}"
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                val coinId = query?.lowercase(Locale.getDefault()) ?: return false
+                cryptoName.text = coinId
+                viewModel.getCurrentPrice(coinId)
+                viewModel.getHistoricalData(coinId, "7") // "7" = 7 days
+                return true
             }
-            prices["ethereum"]?.get("usd")?.let {
-                ethereumPrice.text = "Ethereum: $${it}"
-            }
 
-            // Демонстрационный график
-            val entries = listOf(
-                Entry(0f, 30000f),
-                Entry(1f, 31000f),
-                Entry(2f, 30500f),
-                Entry(3f, 32000f)
-            )
-            val dataSet = LineDataSet(entries, "Bitcoin Price")
+            override fun onQueryTextChange(newText: String?) = true
+        })
+
+        viewModel.cryptoPrice.observe(this) { price ->
+            cryptoPrice.text = "Price: $${price}"
+        }
+
+        viewModel.historicalData.observe(this) { entries ->
+            val dataSet = LineDataSet(entries, "Price")
             chart.data = LineData(dataSet)
             chart.invalidate()
         }
