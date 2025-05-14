@@ -48,9 +48,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         viewModel.historicalData.observe(this) { entries ->
-            val dataSet = LineDataSet(entries, "Price")
-            chart.data = LineData(dataSet)
-            chart.invalidate()
+            val priceFloats = entries.map { it.y } // y — значение цены
+            setupChart(chart, priceFloats)
         }
     }
 
