@@ -1,35 +1,44 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp">
+    android:layout_height="match_parent">
 
-    <androidx.appcompat.widget.SearchView
+    <SearchView
         android:id="@+id/searchView"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:queryHint="Search Cryptocurrency"
-        android:iconifiedByDefault="false"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        android:queryHint="Search Cryptocurrency" />
 
     <TextView
-        android:id="@+id/bitcoinPrice"
-        android:text="Bitcoin: Loading..."
+        android:id="@+id/cryptoName"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="Crypto Name"
+        android:textSize="20sp"
+        app:layout_constraintTop_toBottomOf="@id/searchView"
+        app:layout_constraintStart_toStartOf="parent"
+        android:padding="16dp" />
 
     <TextView
-        android:id="@+id/ethereumPrice"
-        android:text="Ethereum: Loading..."
+        android:id="@+id/cryptoPrice"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="Price: $0.00"
+        app:layout_constraintTop_toBottomOf="@id/cryptoName"
+        app:layout_constraintStart_toStartOf="parent"
+        android:padding="16dp" />
 
     <com.github.mikephil.charting.charts.LineChart
-        android:id="@+id/chart"
-        android:layout_width="match_parent"
+        android:id="@+id/lineChart"
+        android:layout_width="0dp"
         android:layout_height="300dp"
-        android:layout_marginTop="16dp" />
-</LinearLayout>
+        app:layout_constraintTop_toBottomOf="@id/cryptoPrice"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:padding="16dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

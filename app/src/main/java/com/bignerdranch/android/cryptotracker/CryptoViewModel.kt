@@ -5,25 +5,34 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+
+import com.github.mikephil.charting.data.Entry
 import kotlinx.coroutines.launch
+import java.security.KeyStore
 
 class CryptoViewModel : ViewModel() {
     private val repository = CryptoRepository()
-    private val _prices = MutableLiveData<Map<String, Map<String, Double>>>()
-    val prices: LiveData<Map<String, Map<String, Double>>> = _prices
 
-    init {
-        fetchPrices()
+    private val _cryptoPrice = MutableLiveData<Double>()
+    val cryptoPrice: LiveData<Double> = _cryptoPrice
+
+    private val _historicalData = MutableLiveData<List<KeyStore.Entry>>()
+    val historicalData: LiveData<List<KeyStore.Entry>> = _historicalData
+
+    fun getCurrentPrice(cryptoId: String) {
+        viewModelScope.launch {
+            val result = repository.getCurrentPrice(cryptoId)
+            _cryptoPrice.postValue(result)
+        }
     }
 
-    private fun fetchPrices() {
+    fun getHistoricalData(cryptoId: String, interval: String) {
         viewModelScope.launch {
-            try {
-                val result = repository.getPrices()
-                _prices.postValue(result)
-            } catch (e: Exception) {
-                Log.e("CryptoViewModel", "Error: ${e.message}")
+            val priceList = repository.getHistoricalData(cryptoId, interval)
+            val entries = priceList.mapIndexed { index, value ->
+                Entry(index.toFloat(), value.toFloat())
             }
+            _historicalData.postValue(entries)
         }
     }
 }
