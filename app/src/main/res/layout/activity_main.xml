@@ -1,29 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context=".MainActivity">
 
-    <SearchView
-        android:id="@+id/searchView"
+    <!-- Поле ввода -->
+    <EditText
+        android:id="@+id/cryptoInput"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:hint="Введите ID криптовалюты (например, bitcoin)"
+        android:inputType="text"
+        android:padding="12dp"
+        android:background="@drawable/marker_background"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:queryHint="Search Cryptocurrency" />
+        app:layout_constraintEnd_toStartOf="@+id/searchButton"
+        app:layout_constraintHorizontal_weight="1"
+        tools:text="bitcoin" />
 
+    <!-- Кнопка поиска -->
+    <Button
+        android:id="@+id/searchButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Поиск"
+        android:minHeight="48dp"
+        android:minWidth="64dp"
+        app:layout_constraintTop_toTopOf="@id/cryptoInput"
+        app:layout_constraintBottom_toBottomOf="@id/cryptoInput"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Название криптовалюты -->
     <TextView
         android:id="@+id/cryptoName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Crypto Name"
         android:textSize="20sp"
-        app:layout_constraintTop_toBottomOf="@id/searchView"
+        app:layout_constraintTop_toBottomOf="@id/cryptoInput"
         app:layout_constraintStart_toStartOf="parent"
-        android:padding="16dp" />
+        tools:text="Bitcoin" />
 
+    <!-- Цена -->
     <TextView
         android:id="@+id/cryptoPrice"
         android:layout_width="wrap_content"
@@ -31,23 +54,41 @@
         android:text="Price: $0.00"
         app:layout_constraintTop_toBottomOf="@id/cryptoName"
         app:layout_constraintStart_toStartOf="parent"
-        android:padding="16dp" />
+        tools:text="Price: $98,400.00" />
 
+    <!-- Сообщение об ошибке -->
+    <TextView
+        android:id="@+id/errorMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/holo_red_dark"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/cryptoPrice"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:visibility="visible"
+        tools:text="Криптовалюта не найдена" />
+
+    <!-- График -->
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/chart"
         android:layout_width="0dp"
         android:layout_height="300dp"
-        app:layout_constraintTop_toBottomOf="@id/cryptoPrice"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/errorMessage"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:padding="16dp" />
+        tools:ignore="MissingConstraints"
+        tools:visibility="visible"
+        tools:context=".MainActivity" />
 
+    <!-- Выпадающий список для интервалов -->
     <Spinner
         android:id="@+id/intervalSpinner"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:spinnerMode="dropdown"
-        tools:ignore="MissingConstraints" />
-
+        android:layout_height="48dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/chart"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:entries="1д, 7д, 1м, 3м, 1г" />
 </androidx.constraintlayout.widget.ConstraintLayout>

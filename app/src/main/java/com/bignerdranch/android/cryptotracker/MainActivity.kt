@@ -18,6 +18,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Description
+import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
@@ -77,13 +78,12 @@ class MainActivity : ComponentActivity() {
     private fun setupChart() {
         chart.setTouchEnabled(true)
         chart.setPinchZoom(true)
-        chart.setScaleEnabled(true)
-        chart.description = Description().apply { text = "История цены" }
+        chart.setBackgroundColor(Color.TRANSPARENT)
+        chart.setNoDataText("Нет данных для отображения")
 
-        // Подключаем кастомный MarkerView
-        val markerView = CryptoMarkerView(this, R.layout.marker_view)
-        markerView.chartView = chart
-        chart.marker = markerView
+        val marker = CryptoMarkerView(this, R.layout.marker_view)
+        marker.chartView = chart
+        chart.marker = marker
     }
 
     private fun updateChart(entries: List<Entry>) {
@@ -101,6 +101,16 @@ class MainActivity : ComponentActivity() {
             setDrawFilled(true) // добавить подложку под линией
             fillColor = Color.parseColor("#D6EBFF") // нежно-голубой
             fillAlpha = 150
+        }
+
+        chart.xAxis.apply {
+            valueFormatter = DateAxisFormatter()
+            position = XAxis.XAxisPosition.BOTTOM
+            textColor = Color.GRAY
+            setDrawGridLines(false)
+            setAvoidFirstLastClipping(true)
+            granularity = 24 * 60 * 60 * 1000f // шаг 1 день
+            labelRotationAngle = -45f
         }
 
         val lineData = LineData(dataSet)

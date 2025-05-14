@@ -5,10 +5,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-
 import com.github.mikephil.charting.data.Entry
 import kotlinx.coroutines.launch
 import java.security.KeyStore
+import kotlin.text.toFloat
 
 class CryptoViewModel : ViewModel() {
     private val repository = CryptoRepository()
@@ -29,10 +29,16 @@ class CryptoViewModel : ViewModel() {
     fun getHistoricalData(cryptoId: String, interval: String) {
         viewModelScope.launch {
             val priceList = repository.getHistoricalData(cryptoId, interval)
-            val entries = priceList.mapIndexed { index, value ->
-                Entry(index.toFloat(), value.toFloat())
+
+            val entries = priceList.map { point ->
+                val timestamp = point[0].toFloat()  // UNIX time (usually in milliseconds)
+                val price = point[1].toFloat()      // Price value
+                Entry(timestamp, price)
             }
+
             _historicalData.postValue(entries)
         }
     }
 }
+
+

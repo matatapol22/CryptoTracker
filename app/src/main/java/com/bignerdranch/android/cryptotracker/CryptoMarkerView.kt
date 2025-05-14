@@ -7,13 +7,12 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.utils.MPPointF
 
-class CryptoMarkerView(context: Context, layoutResource: Int) :
-    MarkerView(context, layoutResource) {
+class CryptoMarkerView(context: Context, layoutResource: Int) : MarkerView(context, layoutResource) {
 
-    private val priceText: TextView = findViewById(R.id.markerPrice)
+    private val textView: TextView = findViewById(R.id.marker_text)
 
     override fun refreshContent(e: Entry?, highlight: Highlight?) {
-        priceText.text = "$${e?.y}"
+        textView.text = "$${e?.y?.toInt()}"
         super.refreshContent(e, highlight)
     }
 

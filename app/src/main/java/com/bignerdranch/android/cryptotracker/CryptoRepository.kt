@@ -1,5 +1,7 @@
 package com.bignerdranch.android.cryptotracker
 
+import com.github.mikephil.charting.data.Entry
+
 class CryptoRepository {
     private val apiService = RetrofitInstance.api
 
@@ -8,8 +10,9 @@ class CryptoRepository {
         return response[cryptoId]?.get("usd") ?: 0.0
     }
 
-    suspend fun getHistoricalData(cryptoId: String, interval: String): List<Double> {
+    // Теперь возвращает список Entry (timestamp, price)
+    suspend fun getHistoricalData(cryptoId: String, interval: String): List<List<Double>> {
         val response = apiService.getMarketChart(cryptoId, "usd", interval)
-        return response.prices.map { it[1] } // Список цен
+        return response.prices // [[timestamp, price], ...]
     }
 }
