@@ -6,9 +6,9 @@ import retrofit2.http.Query
 
 interface CoinGeckoApi {
     @GET("simple/price")
-    suspend fun getPrices(
+    suspend fun getCryptoPrices(
         @Query("ids") ids: String,
-        @Query("vs_currencies") vsCurrencies: String
+        @Query("vs_currencies") vsCurrencies: String = "usd"
     ): Map<String, Map<String, Double>>
 
     @GET("coins/{id}/market_chart")

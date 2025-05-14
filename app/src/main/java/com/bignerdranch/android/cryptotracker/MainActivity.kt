@@ -1,10 +1,12 @@
 package com.bignerdranch.android.cryptotracker
 
+import android.graphics.Color
 import android.os.Bundle
 import android.widget.SearchView
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
@@ -49,6 +51,40 @@ class MainActivity : AppCompatActivity() {
             val dataSet = LineDataSet(entries, "Price")
             chart.data = LineData(dataSet)
             chart.invalidate()
+        }
+    }
+
+    private fun setupChart(chart: LineChart, prices: List<Float>) {
+        val entries = prices.mapIndexed { index, value ->
+            Entry(index.toFloat(), value)
+        }
+
+        val dataSet = LineDataSet(entries, "Bitcoin Price").apply {
+            color = Color.BLUE
+            valueTextColor = Color.BLACK
+            lineWidth = 2f
+            circleRadius = 4f
+            setDrawCircles(true)
+            setDrawValues(false)
+
+            // Градиентная заливка
+            setDrawFilled(true)
+            fillDrawable = ContextCompat.getDrawable(this@MainActivity, R.drawable.chart_gradient)
+
+            mode = LineDataSet.Mode.CUBIC_BEZIER // сглаженная линия
+        }
+
+        chart.apply {
+            data = LineData(dataSet)
+            description.isEnabled = false
+            legend.isEnabled = false
+
+            xAxis.isEnabled = false
+            axisRight.isEnabled = false
+            axisLeft.textColor = Color.GRAY
+
+            animateX(1000)
+            invalidate()
         }
     }
 }
