@@ -16,8 +16,8 @@ class CryptoViewModel : ViewModel() {
     private val _cryptoPrice = MutableLiveData<Double>()
     val cryptoPrice: LiveData<Double> = _cryptoPrice
 
-    private val _historicalData = MutableLiveData<List<KeyStore.Entry>>()
-    val historicalData: LiveData<List<KeyStore.Entry>> = _historicalData
+    private val _historicalData = MutableLiveData<List<Entry>>()
+    val historicalData: LiveData<List<Entry>> = _historicalData
 
     fun getCurrentPrice(cryptoId: String) {
         viewModelScope.launch {
