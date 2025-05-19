@@ -11,7 +11,7 @@ class ViewPagerAdapter(activity: FragmentActivity) : FragmentStateAdapter(activi
     override fun createFragment(position: Int): Fragment {
         return when (position) {
             0 -> MainFragment()
-            1 -> FavoritesActivity()
+            1 ->  FavoritesFragment()
             else -> throw IllegalArgumentException("Invalid position")
         }
     }
