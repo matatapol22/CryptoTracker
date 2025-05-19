@@ -15,4 +15,8 @@ class CryptoRepository {
         val response = apiService.getMarketChart(cryptoId, "usd", interval)
         return response.prices // [[timestamp, price], ...]
     }
+
+    suspend fun getCoinDetails(id: String): CoinDetailsResponse {
+        return apiService.getCoinDetails(id)
+    }
 }

@@ -8,6 +8,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.SearchView
 import android.widget.Spinner
 import android.widget.TextView
@@ -19,6 +20,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
+import com.bumptech.glide.Glide
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.components.XAxis
@@ -41,6 +43,8 @@ class MainActivity : ComponentActivity() {
 
         val searchButton = findViewById<Button>(R.id.searchButton)
         val cryptoInput = findViewById<EditText>(R.id.cryptoInput)
+        val cryptoIcon = findViewById<ImageView>(R.id.cryptoIcon)
+        val cryptoName = findViewById<TextView>(R.id.cryptoName)
 
 
         chart = findViewById(R.id.chart)
@@ -50,15 +54,20 @@ class MainActivity : ComponentActivity() {
         setupSpinner()
         setupChart()
 
+        viewModel.coinDetails.observe(this) { details ->
+            cryptoName.text = details.name
+            Glide.with(this)
+                .load(details.image.small)
+                .into(cryptoIcon)
+            cryptoIcon.visibility = View.VISIBLE
+        }
+
         // Наблюдение за изменением данных
         viewModel.historicalData.observe(this) { entries ->
             updateChart(entries)
         }
 
-        // Загружаем данные по умолчанию
-        //viewModel.getHistoricalData("bitcoin", "7")
 
-        val cryptoName = findViewById<TextView>(R.id.cryptoName)
 
         searchButton.setOnClickListener {
             loadData()
@@ -82,6 +91,7 @@ class MainActivity : ComponentActivity() {
             cryptoName.text = cryptoId.replaceFirstChar { it.uppercase() }
 
             viewModel.getHistoricalData(cryptoId, interval)
+            viewModel.getCoinDetails(cryptoId)
         } else {
             Toast.makeText(this, "Введите ID криптовалюты", Toast.LENGTH_SHORT).show()
         }

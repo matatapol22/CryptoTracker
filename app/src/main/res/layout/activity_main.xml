@@ -8,41 +8,42 @@
     android:padding="16dp"
     tools:context=".MainActivity">
 
-    <!-- Поле ввода -->
+    <!-- Ввод криптовалюты -->
     <EditText
         android:id="@+id/cryptoInput"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/material_dynamic_neutral50"
-        android:backgroundTint="#BBD5E7"
-        android:hint="Введите ID криптовалюты (например, bitcoin)"
+        android:backgroundTint="#8BC34A"
         android:inputType="text"
         android:padding="12dp"
-        app:layout_constraintEnd_toStartOf="@+id/searchButton"
+        app:layout_constraintEnd_toStartOf="@id/searchButton"
         app:layout_constraintHorizontal_weight="1"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="bitcoin" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Кнопка поиска -->
     <Button
         android:id="@+id/searchButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/material_dynamic_primary30"
-        android:minWidth="64dp"
-        android:minHeight="48dp"
+        android:background="#8BC34A"
+        android:backgroundTint="#8BC34A"
         android:text="Поиск"
+        app:icon="@android:drawable/ic_search_category_default"
+        app:iconSize="18dp"
+        app:iconTint="@color/white"
+        app:iconTintMode="src_in"
         app:layout_constraintBottom_toBottomOf="@id/cryptoInput"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/cryptoInput" />
 
-    <!-- Название криптовалюты -->
+    <!-- Название и иконка -->
     <LinearLayout
-        android:id="@+id/cryptoNameContainer"
+        android:id="@+id/cryptoHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:layout_marginTop="12dp"
         app:layout_constraintTop_toBottomOf="@id/cryptoInput"
         app:layout_constraintStart_toStartOf="parent">
 
@@ -51,87 +52,62 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginEnd="8dp"
-            android:contentDescription="Icon"
-            android:visibility="gone" />
-
-    </LinearLayout>
-
-    <!-- Цена -->
-
-    <!-- Сообщение об ошибке -->
-
-    <!-- График -->
-
-    <!-- Выпадающий список для интервалов -->
-    <TextView
-        android:id="@+id/cryptoPrice"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Price: $0.00"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="-2dp"
-        tools:layout_editor_absoluteY="126dp"
-        tools:text="Price: $98,400.00" />
-
-    <TextView
-        android:id="@+id/errorMessage"
-        android:layout_width="174dp"
-        android:layout_height="15dp"
-        android:textColor="@android:color/holo_red_dark"
-        android:visibility="gone"
-        tools:layout_editor_absoluteX="28dp"
-        tools:layout_editor_absoluteY="223dp"
-        tools:text="Криптовалюта не найдена"
-        tools:visibility="visible" />
-
-    <com.github.mikephil.charting.charts.LineChart
-        android:id="@+id/chart"
-        android:layout_width="0dp"
-        android:layout_height="300dp"
-        android:layout_marginTop="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/errorMessage"
-        tools:context=".MainActivity"
-        tools:ignore="MissingConstraints"
-        tools:visibility="visible" />
-
-    <Spinner
-        android:id="@+id/intervalSpinner"
-        android:layout_width="wrap_content"
-        android:layout_height="48dp"
-        android:layout_marginTop="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/chart"
-        tools:entries="1д, 7д, 1м, 3м, 1г" />
-
-
-    <LinearLayout
-        android:id="@+id/cryptoHeader"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/cryptoInput"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="8dp">
-
-        <ImageView
-            android:id="@+id/cryptoIcon"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginEnd="8dp"
             android:contentDescription="Иконка криптовалюты"
-            android:visibility="gone"
-            tools:ignore="DuplicateIds" />
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/cryptoName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Crypto Name"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            android:textStyle="bold" />
     </LinearLayout>
+
+    <!-- Цена -->
+    <TextView
+        android:id="@+id/cryptoPrice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Price: $0.00"
+        android:textSize="16sp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@id/cryptoHeader"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- Сообщение об ошибке -->
+    <TextView
+        android:id="@+id/errorMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Криптовалюта не найдена"
+        android:textColor="@android:color/holo_red_dark"
+        android:visibility="gone"
+        android:layout_marginTop="4dp"
+        app:layout_constraintTop_toBottomOf="@id/cryptoPrice"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- График -->
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/chart"
+        android:layout_width="0dp"
+        android:layout_height="300dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintTop_toBottomOf="@id/errorMessage"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Выпадающий список интервалов -->
+    <Spinner
+        android:id="@+id/intervalSpinner"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_marginTop="16dp"
+        android:background="#8BC34A"
+        android:backgroundTint="#8BC34A"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/chart" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

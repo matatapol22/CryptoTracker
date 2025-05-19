@@ -39,6 +39,20 @@ class CryptoViewModel : ViewModel() {
             _historicalData.postValue(entries)
         }
     }
+
+    private val _coinDetails = MutableLiveData<CoinDetailsResponse>()
+    val coinDetails: LiveData<CoinDetailsResponse> = _coinDetails
+
+    fun getCoinDetails(id: String) {
+        viewModelScope.launch {
+            try {
+                val details = repository.getCoinDetails(id)  // ← вот здесь было api
+                _coinDetails.postValue(details)
+            } catch (e: Exception) {
+                Log.e("CryptoViewModel", "Ошибка при загрузке иконки: ${e.message}")
+            }
+        }
+    }
 }
 
 

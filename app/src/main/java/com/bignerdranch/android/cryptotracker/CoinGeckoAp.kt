@@ -18,5 +18,13 @@ interface CoinGeckoApi {
         @Query("days") days: String
     ): MarketChartResponse
 
+    @GET("coins/{id}")
+    suspend fun getCoinDetails(
+        @Path("id") id: String
+    ): CoinDetailsResponse
 
 }
+
+
+
+
