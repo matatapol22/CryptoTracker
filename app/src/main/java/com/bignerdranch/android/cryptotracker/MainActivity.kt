@@ -6,9 +6,12 @@ import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Button
+import android.widget.EditText
 import android.widget.SearchView
 import android.widget.Spinner
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -32,8 +35,13 @@ class MainActivity : ComponentActivity() {
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        val searchButton = findViewById<Button>(R.id.searchButton)
+        val cryptoInput = findViewById<EditText>(R.id.cryptoInput)
+
 
         chart = findViewById(R.id.chart)
         spinner = findViewById(R.id.intervalSpinner)
@@ -48,7 +56,34 @@ class MainActivity : ComponentActivity() {
         }
 
         // Загружаем данные по умолчанию
-        viewModel.getHistoricalData("bitcoin", "7")
+        //viewModel.getHistoricalData("bitcoin", "7")
+
+        val cryptoName = findViewById<TextView>(R.id.cryptoName)
+
+        searchButton.setOnClickListener {
+            val cryptoId = cryptoInput.text.toString().trim().lowercase(Locale.ROOT)
+
+            if (cryptoId.isNotEmpty()) {
+                // Получаем выбранный интервал из спиннера
+                val label = spinner.selectedItem.toString()
+                val intervalsMap = mapOf(
+                    "1д" to "1",
+                    "7д" to "7",
+                    "30д" to "30",
+                    "90д" to "90",
+                    "1г" to "365"
+                )
+                val interval = intervalsMap[label] ?: "7"
+                cryptoName.text = cryptoId.replaceFirstChar { it.uppercase()}
+
+
+
+                // Загружаем данные
+                viewModel.getHistoricalData(cryptoId, interval)
+            } else {
+                Toast.makeText(this, "Введите ID криптовалюты", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun setupSpinner() {
@@ -66,9 +101,7 @@ class MainActivity : ComponentActivity() {
 
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                val label = parent.getItemAtPosition(position) as String
-                val interval = intervalsMap[label] ?: "7"
-                viewModel.getHistoricalData("bitcoin", interval)
+
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {}
