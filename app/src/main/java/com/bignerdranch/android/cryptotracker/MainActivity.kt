@@ -61,28 +61,29 @@ class MainActivity : ComponentActivity() {
         val cryptoName = findViewById<TextView>(R.id.cryptoName)
 
         searchButton.setOnClickListener {
-            val cryptoId = cryptoInput.text.toString().trim().lowercase(Locale.ROOT)
+            loadData()
+        }
+    }
+    private fun loadData() {
+        val cryptoInput = findViewById<EditText>(R.id.cryptoInput)
+        val cryptoName = findViewById<TextView>(R.id.cryptoName)
+        val cryptoId = cryptoInput.text.toString().trim().lowercase(Locale.ROOT)
 
-            if (cryptoId.isNotEmpty()) {
-                // Получаем выбранный интервал из спиннера
-                val label = spinner.selectedItem.toString()
-                val intervalsMap = mapOf(
-                    "1д" to "1",
-                    "7д" to "7",
-                    "30д" to "30",
-                    "90д" to "90",
-                    "1г" to "365"
-                )
-                val interval = intervalsMap[label] ?: "7"
-                cryptoName.text = cryptoId.replaceFirstChar { it.uppercase()}
+        if (cryptoId.isNotEmpty()) {
+            val label = spinner.selectedItem.toString()
+            val intervalsMap = mapOf(
+                "1д" to "1",
+                "7д" to "7",
+                "30д" to "30",
+                "90д" to "90",
+                "1г" to "365"
+            )
+            val interval = intervalsMap[label] ?: "7"
+            cryptoName.text = cryptoId.replaceFirstChar { it.uppercase() }
 
-
-
-                // Загружаем данные
-                viewModel.getHistoricalData(cryptoId, interval)
-            } else {
-                Toast.makeText(this, "Введите ID криптовалюты", Toast.LENGTH_SHORT).show()
-            }
+            viewModel.getHistoricalData(cryptoId, interval)
+        } else {
+            Toast.makeText(this, "Введите ID криптовалюты", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -101,7 +102,7 @@ class MainActivity : ComponentActivity() {
 
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-
+                loadData()
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {}

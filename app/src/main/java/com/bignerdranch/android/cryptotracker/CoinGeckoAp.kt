@@ -17,4 +17,6 @@ interface CoinGeckoApi {
         @Query("vs_currency") currency: String,
         @Query("days") days: String
     ): MarketChartResponse
+
+
 }
