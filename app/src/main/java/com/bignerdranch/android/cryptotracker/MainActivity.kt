@@ -21,6 +21,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
+import com.bignerdranch.android.cryptotracker.databinding.ActivityMainBinding
 import com.bumptech.glide.Glide
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Description
@@ -28,193 +29,28 @@ import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import com.google.android.material.tabs.TabLayoutMediator
 import java.util.Locale
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
 
-    private lateinit var viewModel: CryptoViewModel
-    private lateinit var chart: LineChart
-    private lateinit var spinner: Spinner
-    private var currentCoinDetails: CoinDetailsResponse? = null
+    private lateinit var binding: ActivityMainBinding
 
+    private val tabTitles = listOf("Главная", "Избранное")
 
-    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
-        val searchButton = findViewById<Button>(R.id.searchButton)
-        val cryptoInput = findViewById<EditText>(R.id.cryptoInput)
-        val cryptoIcon = findViewById<ImageView>(R.id.cryptoIcon)
-        val cryptoName = findViewById<TextView>(R.id.cryptoName)
-        val favoritesViewModel = ViewModelProvider(this)[FavoritesViewModel::class.java]
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
+        // Настройка ViewPager2
+        val adapter = ViewPagerAdapter(this)
+        binding.viewPager.adapter = adapter
 
-
-
-        chart = findViewById(R.id.chart)
-        spinner = findViewById(R.id.intervalSpinner)
-        viewModel = ViewModelProvider(this)[CryptoViewModel::class.java]
-
-        setupSpinner()
-        setupChart()
-
-        viewModel.coinDetails.observe(this) { details ->
-            cryptoName.text = details.name
-            Glide.with(this)
-                .load(details.image.small)
-                .into(cryptoIcon)
-            cryptoIcon.visibility = View.VISIBLE
-        }
-
-        // Наблюдение за изменением данных
-        viewModel.historicalData.observe(this) { entries ->
-            updateChart(entries)
-        }
-
-
-        viewModel.coinDetails.observe(this) { details ->
-            currentCoinDetails = details  // сохраним текущие детали
-
-            cryptoName.text = details.name
-            Glide.with(this)
-                .load(details.image.small)
-                .into(cryptoIcon)
-            cryptoIcon.visibility = View.VISIBLE
-        }
-
-        val favoriteButton = findViewById<Button>(R.id.favoriteButton)  // найди кнопку
-
-        favoriteButton.setOnClickListener {
-            val coin = currentCoinDetails
-            if (coin != null) {
-                val favoriteCoin = FavoriteCoin(
-                    id = coin.id,
-                    name = coin.name,
-                    imageUrl = coin.image.small
-                )
-                favoritesViewModel.addFavorite(favoriteCoin)
-                Toast.makeText(this, "${coin.name} добавлен в избранное", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this, "Данные о криптовалюте не загружены", Toast.LENGTH_SHORT).show()
-            }
-        }
-
-        val buttonFavorites = findViewById<Button>(R.id.buttonFavorites)
-        buttonFavorites.setOnClickListener {
-            val intent = Intent(this, FavoritesActivity::class.java)
-            startActivity(intent)
-        }
-
-
-
-        searchButton.setOnClickListener {
-            loadData()
-        }
-    }
-    private fun loadData() {
-        val cryptoInput = findViewById<EditText>(R.id.cryptoInput)
-        val cryptoName = findViewById<TextView>(R.id.cryptoName)
-        val cryptoId = cryptoInput.text.toString().trim().lowercase(Locale.ROOT)
-
-        if (cryptoId.isNotEmpty()) {
-            val label = spinner.selectedItem.toString()
-            val intervalsMap = mapOf(
-                "1д" to "1",
-                "7д" to "7",
-                "30д" to "30",
-                "90д" to "90",
-                "1г" to "365"
-            )
-            val interval = intervalsMap[label] ?: "7"
-            cryptoName.text = cryptoId.replaceFirstChar { it.uppercase() }
-
-            viewModel.getHistoricalData(cryptoId, interval)
-            viewModel.getCoinDetails(cryptoId)
-        } else {
-            Toast.makeText(this, "Введите ID криптовалюты", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    private fun setupSpinner() {
-        val intervalsMap = mapOf(
-            "1д" to "1",
-            "7д" to "7",
-            "30д" to "30",
-            "90д" to "90",
-            "1г" to "365"
-        )
-
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, intervalsMap.keys.toList())
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinner.adapter = adapter
-
-        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                loadData()
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>) {}
-        }
-    }
-
-    private fun setupChart() {
-        chart.setTouchEnabled(true)
-        chart.setPinchZoom(true)
-        chart.setBackgroundColor(Color.TRANSPARENT)
-        chart.setNoDataText("Нет данных для отображения")
-
-        val marker = CryptoMarkerView(this, R.layout.marker_view)
-        marker.chartView = chart
-        chart.marker = marker
-    }
-
-    private fun updateChart(entries: List<Entry>) {
-        val dataSet = LineDataSet(entries, "Цена USD").apply {
-            mode = LineDataSet.Mode.CUBIC_BEZIER // сглаживание линий
-            color = Color.parseColor("#0088FF")  // ярко-синий
-            lineWidth = 2f
-
-            setDrawCircles(true)
-            setCircleColor(Color.parseColor("#0088FF"))
-            circleRadius = 4f
-            setDrawCircleHole(false)
-
-            setDrawValues(false) // скрыть цифры над точками
-            setDrawFilled(true) // добавить подложку под линией
-            fillColor = Color.parseColor("#D6EBFF") // нежно-голубой
-            fillAlpha = 150
-        }
-
-        chart.xAxis.apply {
-            valueFormatter = DateAxisFormatter()
-            position = XAxis.XAxisPosition.BOTTOM
-            textColor = Color.GRAY
-            setDrawGridLines(false)
-            setAvoidFirstLastClipping(true)
-            granularity = 24 * 60 * 60 * 1000f // шаг 1 день
-            labelRotationAngle = -45f
-        }
-
-        val lineData = LineData(dataSet)
-        chart.data = lineData
-
-        chart.axisRight.isEnabled = false
-        chart.xAxis.apply {
-            setDrawGridLines(false)
-            setDrawAxisLine(false)
-            setDrawLabels(false)
-        }
-        chart.axisLeft.apply {
-            setDrawGridLines(false)
-            setDrawAxisLine(false)
-            textColor = Color.GRAY
-        }
-        chart.legend.isEnabled = false
-        chart.description.isEnabled = false
-        chart.setTouchEnabled(true)
-        chart.setPinchZoom(true)
-        chart.invalidate()
+        // Связка TabLayout с ViewPager2
+        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
+            tab.text = tabTitles[position]
+        }.attach()
     }
 }
