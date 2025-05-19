@@ -34,6 +34,8 @@ class MainActivity : ComponentActivity() {
     private lateinit var viewModel: CryptoViewModel
     private lateinit var chart: LineChart
     private lateinit var spinner: Spinner
+    private var currentCoinDetails: CoinDetailsResponse? = null
+
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,6 +47,9 @@ class MainActivity : ComponentActivity() {
         val cryptoInput = findViewById<EditText>(R.id.cryptoInput)
         val cryptoIcon = findViewById<ImageView>(R.id.cryptoIcon)
         val cryptoName = findViewById<TextView>(R.id.cryptoName)
+        val favoritesViewModel = ViewModelProvider(this)[FavoritesViewModel::class.java]
+
+
 
 
         chart = findViewById(R.id.chart)
@@ -65,6 +70,34 @@ class MainActivity : ComponentActivity() {
         // Наблюдение за изменением данных
         viewModel.historicalData.observe(this) { entries ->
             updateChart(entries)
+        }
+
+
+        viewModel.coinDetails.observe(this) { details ->
+            currentCoinDetails = details  // сохраним текущие детали
+
+            cryptoName.text = details.name
+            Glide.with(this)
+                .load(details.image.small)
+                .into(cryptoIcon)
+            cryptoIcon.visibility = View.VISIBLE
+        }
+
+        val favoriteButton = findViewById<Button>(R.id.favoriteButton)  // найди кнопку
+
+        favoriteButton.setOnClickListener {
+            val coin = currentCoinDetails
+            if (coin != null) {
+                val favoriteCoin = FavoriteCoin(
+                    id = coin.id,
+                    name = coin.name,
+                    imageUrl = coin.image.small
+                )
+                favoritesViewModel.addFavorite(favoriteCoin)
+                Toast.makeText(this, "${coin.name} добавлен в избранное", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Данные о криптовалюте не загружены", Toast.LENGTH_SHORT).show()
+            }
         }
 
 
