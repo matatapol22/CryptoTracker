@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.kapt)
 }
 
 android {
@@ -53,6 +54,9 @@ dependencies {
     implementation(libs.lifecycle.livedata.ktx)
     implementation(libs.mpandroidchart)
     implementation(libs.glide)
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    kapt(libs.room.compiler)
 
 
 }
