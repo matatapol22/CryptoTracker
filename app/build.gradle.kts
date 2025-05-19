@@ -8,6 +8,10 @@ android {
     namespace = "com.bignerdranch.android.cryptotracker"
     compileSdk = 35
 
+    buildFeatures {
+        viewBinding =  true
+    }
+
     defaultConfig {
         applicationId = "com.bignerdranch.android.cryptotracker"
         minSdk = 21

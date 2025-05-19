@@ -1,6 +1,7 @@
 package com.bignerdranch.android.cryptotracker
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
@@ -98,6 +99,12 @@ class MainActivity : ComponentActivity() {
             } else {
                 Toast.makeText(this, "Данные о криптовалюте не загружены", Toast.LENGTH_SHORT).show()
             }
+        }
+
+        val buttonFavorites = findViewById<Button>(R.id.buttonFavorites)
+        buttonFavorites.setOnClickListener {
+            val intent = Intent(this, FavoritesActivity::class.java)
+            startActivity(intent)
         }
 
 
