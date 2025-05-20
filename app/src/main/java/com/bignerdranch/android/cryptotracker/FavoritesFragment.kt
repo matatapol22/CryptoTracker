@@ -2,6 +2,7 @@ package com.bignerdranch.android.cryptotracker
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,11 +20,16 @@ class FavoritesFragment : Fragment(R.layout.fragment_favorites) {
         viewModel = ViewModelProvider(requireActivity())[FavoritesViewModel::class.java]
         sharedViewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
 
-        val adapter = FavoriteCoinsAdapter { selectedCoin ->
-            sharedViewModel.selectCoin(selectedCoin)
-            // Переключение на главную вкладку
-            (activity as? MainActivity)?.switchToMainTab()
-        }
+        val adapter = FavoriteCoinsAdapter(
+            onItemClick = { selectedCoin ->
+                sharedViewModel.selectCoin(selectedCoin)
+                (activity as? MainActivity)?.switchToMainTab()
+            },
+            onDeleteClick = { coinToDelete ->
+                viewModel.removeFavorite(coinToDelete)
+                Toast.makeText(requireContext(), "${coinToDelete.name} удалён", Toast.LENGTH_SHORT).show()
+            }
+        )
 
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerFavorites)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())

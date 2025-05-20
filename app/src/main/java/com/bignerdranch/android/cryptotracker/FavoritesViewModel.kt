@@ -23,4 +23,6 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
             dao.delete(coin)
         }
     }
+
+
 }
