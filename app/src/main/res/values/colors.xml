@@ -7,4 +7,9 @@
     <color name="purple_700">#3700B3</color>
     <color name="teal_200">#03DAC5</color>
     <color name="teal_700">#018786</color>
+    <color name="orange_500">#FF5722</color>
+    <color name="gray_100">#F5F5F5</color>
+    <color name="gray_800">#212121</color>
+    <color name="gray_600">#757575</color>
+    <color name="error_red">#D32F2F</color>
 </resources>

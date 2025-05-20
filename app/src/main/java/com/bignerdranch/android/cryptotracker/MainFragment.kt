@@ -2,6 +2,8 @@ package com.bignerdranch.android.cryptotracker
 
 import android.graphics.Color
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -37,6 +39,9 @@ class MainFragment : Fragment() {
     private lateinit var sharedViewModel: SharedViewModel
     private lateinit var cryptoPrice: TextView
     private var currentCryptoId: String? = null
+    private lateinit var cryptoAmountEditText: EditText
+    private lateinit var dollarValueTextView: TextView
+    private var currentPriceUsd: Double = 0.0
 
     private var currentCoinDetails: CoinDetailsResponse? = null
 
@@ -60,6 +65,8 @@ class MainFragment : Fragment() {
         searchButton = view.findViewById(R.id.searchButton)
         sharedViewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
         cryptoPrice = view.findViewById(R.id.cryptoPrice)
+        cryptoAmountEditText = view.findViewById(R.id.cryptoAmountEditText)
+        dollarValueTextView = view.findViewById(R.id.dollarValueTextView)
 
         // ViewModel
         viewModel = ViewModelProvider(this)[CryptoViewModel::class.java]
@@ -85,16 +92,29 @@ class MainFragment : Fragment() {
             cryptoIcon.visibility = View.VISIBLE
 
             val price = details.marketData?.currentPrice?.get("usd")
-            cryptoPrice.text = if (price != null) {
+            view.findViewById<TextView>(R.id.cryptoPrice).text = if (price != null) {
                 "Цена: $${String.format("%.2f", price)}"
             } else {
                 "Цена не найдена"
             }
+
+            currentPriceUsd = details.marketData?.currentPrice?.get("usd") ?: 0.0
+            updateDollarValue()
         }
+
+
 
         viewModel.historicalData.observe(viewLifecycleOwner) { entries ->
             updateChart(entries)
         }
+
+        cryptoAmountEditText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                updateDollarValue()
+            }
+            override fun afterTextChanged(s: Editable?) {}
+        })
 
         searchButton.setOnClickListener { loadData() }
 
@@ -111,6 +131,12 @@ class MainFragment : Fragment() {
                 Toast.makeText(requireContext(), "Сначала загрузите криптовалюту", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun updateDollarValue() {
+        val inputAmount = cryptoAmountEditText.text.toString().toDoubleOrNull() ?: 0.0
+        val dollarValue = inputAmount * currentPriceUsd
+        dollarValueTextView.text = "$${String.format("%.2f", dollarValue)}"
     }
 
     private fun getSelectedInterval(): String {

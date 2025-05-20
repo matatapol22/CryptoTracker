@@ -7,6 +7,7 @@ data class CoinDetailsResponse(
     val symbol: String,
     val name: String,
     val image: ImageData,
+    @SerializedName("market_data")
     val marketData: MarketData?
 )
 
