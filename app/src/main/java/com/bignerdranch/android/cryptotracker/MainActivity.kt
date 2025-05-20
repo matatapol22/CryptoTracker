@@ -47,10 +47,21 @@ class MainActivity : AppCompatActivity() {
         // Настройка ViewPager2
         val adapter = ViewPagerAdapter(this)
         binding.viewPager.adapter = adapter
+        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
+            tab.text = if (position == 0) "Главная" else "Избранное"
+        }.attach()
 
         // Связка TabLayout с ViewPager2
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             tab.text = tabTitles[position]
         }.attach()
+
+
+
+
+    }
+
+    fun switchToMainTab() {
+        binding.viewPager.currentItem = 0
     }
 }

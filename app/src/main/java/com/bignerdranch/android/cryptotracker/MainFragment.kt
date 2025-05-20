@@ -34,6 +34,7 @@ class MainFragment : Fragment() {
     private lateinit var cryptoIcon: ImageView
     private lateinit var favoriteButton: Button
     private lateinit var searchButton: Button
+    private lateinit var sharedViewModel: SharedViewModel
 
     private var currentCoinDetails: CoinDetailsResponse? = null
 
@@ -55,6 +56,7 @@ class MainFragment : Fragment() {
         cryptoIcon = view.findViewById(R.id.cryptoIcon)
         favoriteButton = view.findViewById(R.id.favoriteButton)
         searchButton = view.findViewById(R.id.searchButton)
+        sharedViewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
 
         // ViewModel
         viewModel = ViewModelProvider(this)[CryptoViewModel::class.java]
@@ -62,6 +64,12 @@ class MainFragment : Fragment() {
 
         setupChart()
         setupSpinner()
+
+        sharedViewModel.selectedCoin.observe(viewLifecycleOwner) { coin ->
+            // Обновление UI с информацией о выбранной криптовалюте
+            view.findViewById<TextView>(R.id.cryptoName).text = coin.name
+            // Дополнительное обновление UI по необходимости
+        }
 
         viewModel.coinDetails.observe(viewLifecycleOwner) { details ->
             currentCoinDetails = details
