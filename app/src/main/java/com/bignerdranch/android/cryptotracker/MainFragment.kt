@@ -35,6 +35,7 @@ class MainFragment : Fragment() {
     private lateinit var favoriteButton: Button
     private lateinit var searchButton: Button
     private lateinit var sharedViewModel: SharedViewModel
+    private lateinit var cryptoPrice: TextView
     private var currentCryptoId: String? = null
 
     private var currentCoinDetails: CoinDetailsResponse? = null
@@ -58,6 +59,7 @@ class MainFragment : Fragment() {
         favoriteButton = view.findViewById(R.id.favoriteButton)
         searchButton = view.findViewById(R.id.searchButton)
         sharedViewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
+        cryptoPrice = view.findViewById(R.id.cryptoPrice)
 
         // ViewModel
         viewModel = ViewModelProvider(this)[CryptoViewModel::class.java]
@@ -81,6 +83,13 @@ class MainFragment : Fragment() {
                 .load(details.image.small)
                 .into(cryptoIcon)
             cryptoIcon.visibility = View.VISIBLE
+
+            val price = details.marketData?.currentPrice?.get("usd")
+            cryptoPrice.text = if (price != null) {
+                "Цена: $${String.format("%.2f", price)}"
+            } else {
+                "Цена не найдена"
+            }
         }
 
         viewModel.historicalData.observe(viewLifecycleOwner) { entries ->
