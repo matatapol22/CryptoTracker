@@ -35,6 +35,7 @@ class MainFragment : Fragment() {
     private lateinit var favoriteButton: Button
     private lateinit var searchButton: Button
     private lateinit var sharedViewModel: SharedViewModel
+    private var currentCryptoId: String? = null
 
     private var currentCoinDetails: CoinDetailsResponse? = null
 
@@ -66,9 +67,11 @@ class MainFragment : Fragment() {
         setupSpinner()
 
         sharedViewModel.selectedCoin.observe(viewLifecycleOwner) { coin ->
-            // Обновление UI с информацией о выбранной криптовалюте
-            view.findViewById<TextView>(R.id.cryptoName).text = coin.name
-            // Дополнительное обновление UI по необходимости
+            cryptoName.text = coin.name
+            currentCryptoId = coin.id
+            // Запускаем загрузку данных о выбранной монете
+            viewModel.getCoinDetails(coin.id)
+            viewModel.getHistoricalData(coin.id, spinner.selectedItem.toString())
         }
 
         viewModel.coinDetails.observe(viewLifecycleOwner) { details ->
@@ -101,23 +104,26 @@ class MainFragment : Fragment() {
         }
     }
 
+    private fun getSelectedInterval(): String {
+        val intervalsMap = mapOf(
+            "1д" to "1",
+            "7д" to "7",
+            "30д" to "30",
+            "90д" to "90",
+            "1г" to "365"
+        )
+        val intervalLabel = spinner.selectedItem.toString()
+        return intervalsMap[intervalLabel] ?: "7"
+    }
+
     private fun loadData() {
-        val cryptoId = cryptoInput.text.toString().trim().lowercase(Locale.ROOT)
-
-        if (cryptoId.isNotEmpty()) {
-            val label = spinner.selectedItem.toString()
-            val intervalsMap = mapOf(
-                "1д" to "1",
-                "7д" to "7",
-                "30д" to "30",
-                "90д" to "90",
-                "1г" to "365"
-            )
-            val interval = intervalsMap[label] ?: "7"
-            cryptoName.text = cryptoId.replaceFirstChar { it.uppercase() }
-
-            viewModel.getHistoricalData(cryptoId, interval)
-            viewModel.getCoinDetails(cryptoId)
+        val cryptoIdInput = cryptoInput.text.toString().trim().lowercase(Locale.ROOT)
+        if (cryptoIdInput.isNotEmpty()) {
+            currentCryptoId = cryptoIdInput
+            cryptoName.text = cryptoIdInput.replaceFirstChar { it.uppercase() }
+            val interval = getSelectedInterval()
+            viewModel.getCoinDetails(cryptoIdInput)
+            viewModel.getHistoricalData(cryptoIdInput, interval)
         } else {
             Toast.makeText(requireContext(), "Введите ID криптовалюты", Toast.LENGTH_SHORT).show()
         }
@@ -138,7 +144,10 @@ class MainFragment : Fragment() {
 
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                loadData()
+                currentCryptoId?.let { cryptoId ->
+                    val interval = getSelectedInterval()
+                    viewModel.getHistoricalData(cryptoId, interval)
+                }
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {}

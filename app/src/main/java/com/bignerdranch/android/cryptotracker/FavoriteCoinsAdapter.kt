@@ -26,8 +26,9 @@ class FavoriteCoinsAdapter(
     }
 
     inner class FavoriteCoinViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val coinName: TextView = itemView.findViewById(R.id.textViewCoinName)
         fun bind(coin: FavoriteCoin) {
-            itemView.findViewById<TextView>(R.id.textViewCoinName).text = coin.name
+            coinName.text = coin.name
             itemView.setOnClickListener {
                 onItemClick(coin)
             }
