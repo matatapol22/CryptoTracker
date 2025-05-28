@@ -201,17 +201,26 @@ class MainFragment : Fragment() {
     }
 
     private fun updateChart(entries: List<Entry>) {
+        if (entries.isEmpty()) return
+
+        val firstY = entries.first().y
+        val lastY = entries.last().y
+        val isFalling = lastY < firstY
+
+        val lineColorValue = if (isFalling) Color.parseColor("#FF3B30") else Color.parseColor("#0088FF") // красный или синий
+        val fillColorValue = if (isFalling) Color.parseColor("#FFD6D6") else Color.parseColor("#D6EBFF") // розовый или голубой
+
         val dataSet = LineDataSet(entries, "Цена USD").apply {
             mode = LineDataSet.Mode.CUBIC_BEZIER
-            color = Color.parseColor("#0088FF")
+            color = lineColorValue
             lineWidth = 2f
             setDrawCircles(true)
-            setCircleColor(Color.parseColor("#0088FF"))
+            setCircleColor(lineColorValue)
             circleRadius = 4f
             setDrawCircleHole(false)
             setDrawValues(false)
             setDrawFilled(true)
-            fillColor = Color.parseColor("#D6EBFF")
+            setFillColor(fillColorValue)
             fillAlpha = 150
         }
 
@@ -232,4 +241,5 @@ class MainFragment : Fragment() {
         chart.data = LineData(dataSet)
         chart.invalidate()
     }
+
 }
