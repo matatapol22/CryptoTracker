@@ -14,4 +14,4 @@ object RetrofitInstance {
     val api: CoinGeckoApi by lazy {
         retrofit.create(CoinGeckoApi::class.java)
     }
-}
+} ..//
